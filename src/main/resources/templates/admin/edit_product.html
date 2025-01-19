@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" th:replace="~{base::layout(~{::section})}">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Edit Product</title>
+	<!-- Include Google Fonts -->
+	<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+	<!-- Include Bootstrap CSS -->
+	<link rel="stylesheet" th:href="@{/css/bootstrap.min.css}">
+	<style>
+		body {
+			background-color: #12487d;
+			color: #12487d;
+			font-family: 'Roboto', sans-serif;
+		}
+
+		.card {
+			background-color: #16213e;
+			border: none;
+			border-radius: 16px;
+			box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+		}
+
+		.card-header {
+			background: linear-gradient(135deg, #007bff, #00d4ff);
+			color: white;
+			border-radius: 16px 16px 0 0;
+			text-align: center;
+			padding: 1.5rem;
+			font-size: 1.5rem;
+			font-weight: 700;
+			box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+		}
+
+		.form-label {
+			font-weight: 500;
+			color: #00d4ff;
+		}
+
+		.form-control {
+			background-color: #0f3460;
+			color: white;
+			border: 1px solid #00d4ff;
+			border-radius: 8px;
+			padding: 0.8rem;
+			transition: border-color 0.3s ease;
+		}
+
+		.form-control:focus {
+			background-color: #16213e;
+			border-color: #007bff;
+			box-shadow: 0 0 8px rgba(0, 123, 255, 0.5);
+		}
+
+		.btn-primary {
+			background: linear-gradient(135deg, #007bff, #00d4ff);
+			border: none;
+			padding: 0.8rem 1.2rem;
+			font-size: 1rem;
+			font-weight: 600;
+			border-radius: 8px;
+			transition: all 0.3s ease;
+		}
+
+		.btn-primary:hover {
+			background: linear-gradient(135deg, #0056b3, #00aaff);
+			transform: scale(1.03);
+			box-shadow: 0 4px 15px rgba(0, 123, 255, 0.3);
+		}
+
+		.alert {
+			font-size: 0.9rem;
+			border-radius: 8px;
+			padding: 0.8rem 1rem;
+		}
+
+		img {
+			margin-top: 1rem;
+			border-radius: 8px;
+			box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+		}
+
+		.container {
+			margin-top: 50px;
+		}
+	</style>
+</head>
+<body>
+<section>
+	<div class="container">
+		<div class="row justify-content-center">
+			<div class="col-lg-8">
+				<div class="card">
+					<div class="card-header">
+						Edit Product
+					</div>
+					<div class="card-body px-5 py-4">
+						<!-- Success and Error Messages -->
+						<div th:if="${session.succMsg}" class="alert alert-success text-center" role="alert">
+							[[${session.succMsg}]]
+							<th:block th:text="${@commnServiceImpl.removeSessionMessage()}"></th:block>
+						</div>
+						<div th:if="${session.errorMsg}" class="alert alert-danger text-center" role="alert">
+							[[${session.errorMsg}]]
+							<th:block th:text="${@commnServiceImpl.removeSessionMessage()}"></th:block>
+						</div>
+
+						<!-- Form -->
+						<form action="/admin/updateProduct" method="post" enctype="multipart/form-data">
+							<input type="hidden" name="id" th:value="${product.id}">
+							<div class="mb-3">
+								<label class="form-label">Product Title</label>
+								<input type="text" name="title" th:value="${product.title}" class="form-control" placeholder="Enter product title">
+							</div>
+
+							<div class="mb-3">
+								<label class="form-label">Description</label>
+								<textarea rows="3" class="form-control" name="description" placeholder="Enter product description">[[${product.description}]]</textarea>
+							</div>
+
+							<div class="row">
+								<div class="col-md-6">
+									<div class="mb-3">
+										<label class="form-label">Category</label>
+										<select class="form-control" name="category">
+											<option>[[${product.category}]]</option>
+											<option th:each="c:${categories}" th:value="${c.name}" th:text="${c.name}"></option>
+										</select>
+									</div>
+								</div>
+								<div class="col-md-6">
+									<div class="mb-3">
+										<label class="form-label">Price</label>
+										<input type="number" name="price" th:value="${product.price}" class="form-control" placeholder="Enter product price">
+									</div>
+								</div>
+							</div>
+
+							<div class="row">
+								<div class="col-md-6">
+									<div class="mb-3">
+										<label class="form-label">Discount</label>
+										<input type="number" name="discount" th:value="${product.discount}" class="form-control" placeholder="Enter discount percentage">
+									</div>
+								</div>
+								<div class="col-md-6">
+									<div class="mb-3">
+										<label class="form-label">Discounted Price</label>
+										<input type="number" name="discountPrice" readonly th:value="${product.discountPrice}" class="form-control">
+									</div>
+								</div>
+							</div>
+
+							<div class="mb-3">
+								<label class="form-label">Status</label>
+								<div class="form-check">
+									<input class="form-check-input" type="radio" th:checked="${product.isActive==true}" value="true" name="isActive" id="statusActive">
+									<label class="form-check-label" for="statusActive">Active</label>
+								</div>
+								<div class="form-check">
+									<input class="form-check-input" type="radio" th:checked="${product.isActive==false}" value="false" name="isActive" id="statusInactive">
+									<label class="form-check-label" for="statusInactive">Inactive</label>
+								</div>
+							</div>
+
+							<div class="row">
+								<div class="col-md-6">
+									<div class="mb-3">
+										<label class="form-label">Stock</label>
+										<input type="number" name="stock" th:value="${product.stock}" class="form-control" placeholder="Enter stock quantity">
+									</div>
+								</div>
+								<div class="col-md-6">
+									<div class="mb-3">
+										<label class="form-label">Upload Image</label>
+										<input type="file" name="file" class="form-control">
+									</div>
+									<img th:src="@{'/img/product_img/'+${product.image}}" alt="Product Image" width="100px" height="100px">
+								</div>
+							</div>
+
+							<button type="submit" class="btn btn-primary w-100 mt-4">Update Product</button>
+						</form>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</section>
+</body>
+</html>

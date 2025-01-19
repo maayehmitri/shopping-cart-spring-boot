@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" th:replace="~{base::layout(~{::section})}">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>All Products</title>
+	<!-- Include Google Fonts -->
+	<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+	<!-- Include Bootstrap CSS -->
+	<link rel="stylesheet" th:href="@{/css/bootstrap.min.css}">
+	<style>
+		body {
+			background-color: #1a1a2e;
+			color: #ffffff;
+			font-family: 'Roboto', sans-serif;
+		}
+
+		.container-fluid {
+			margin-top: 50px;
+		}
+
+		.table {
+			background-color: #0f3460;
+			color: #ffffff;
+			border-radius: 8px;
+			overflow: hidden;
+		}
+
+		.table thead {
+			background-color: #007bff;
+			color: white;
+		}
+
+		.table tbody tr:hover {
+			background-color: #16213e;
+		}
+
+		.card-sh {
+			background-color: #16213e;
+			border: none;
+			border-radius: 8px;
+			box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+		}
+
+		.btn-primary, .btn-danger {
+			border: none;
+			transition: all 0.3s ease;
+		}
+
+		.btn-primary:hover {
+			background-color: #0056b3;
+			transform: scale(1.05);
+		}
+
+		.btn-danger:hover {
+			background-color: #b30000;
+			transform: scale(1.05);
+		}
+
+		.form-control {
+			background-color: #0f3460;
+			color: #ffffff;
+			border: 1px solid #007bff;
+			border-radius: 8px;
+		}
+
+		.form-control:focus {
+			background-color: #16213e;
+			border-color: #00d4ff;
+			box-shadow: 0 0 8px rgba(0, 123, 255, 0.5);
+		}
+
+		a {
+			color: #00d4ff;
+			text-decoration: none;
+			transition: color 0.3s ease;
+		}
+
+		a:hover {
+			color: #007bff;
+		}
+
+		hr {
+			border-color: #007bff;
+		}
+	</style>
+</head>
+<body>
+<section>
+	<div class="container-fluid">
+		<div class="row">
+			<p class="text-center fs-3 mt-2">All Products</p>
+			<hr>
+			<a href="/admin/" class="text-decoration-none"><i class="fa-solid fa-arrow-left"></i> Back</a>
+
+			<!-- Success and Error Messages -->
+			<div th:if="${session.succMsg}" class="alert alert-success text-center mt-3" role="alert">
+				[[${session.succMsg}]]
+				<th:block th:text="${@commnServiceImpl.removeSessionMessage()}"></th:block>
+			</div>
+			<div th:if="${session.errorMsg}" class="alert alert-danger text-center mt-3" role="alert">
+				[[${session.errorMsg}]]
+				<th:block th:text="${@commnServiceImpl.removeSessionMessage()}"></th:block>
+			</div>
+
+			<!-- Search Form -->
+			<div class="col-md-4 p-3">
+				<form action="/admin/products" method="get">
+					<div class="input-group">
+						<input type="text" class="form-control" name="ch" placeholder="Search product">
+						<button class="btn btn-primary">Search</button>
+					</div>
+				</form>
+			</div>
+
+			<!-- Products Table -->
+			<div class="p-3">
+				<table class="table table-hover">
+					<thead>
+					<tr>
+						<th scope="col">Sl No</th>
+						<th scope="col">Image</th>
+						<th scope="col">Title</th>
+						<th scope="col">Category</th>
+						<th scope="col">Price</th>
+						<th scope="col">Discount</th>
+						<th scope="col">Discount Price</th>
+						<th scope="col">Status</th>
+						<th scope="col">Stock</th>
+						<th scope="col">Action</th>
+					</tr>
+					</thead>
+					<tbody>
+					<th:block th:each="p,c:${products}">
+						<tr>
+							<th scope="row">[[${c.count}]]</th>
+							<td><img th:src="@{'/img/product_img/'+${p.image}}" alt="Product Image" width="70" height="70" class="rounded"></td>
+							<td>[[${p.title}]]</td>
+							<td>[[${p.category}]]</td>
+							<td>[[${p.price}]]</td>
+							<td>[[${p.discount}]]%</td>
+							<td>[[${p.discountPrice}]]</td>
+							<td th:class="${p.isActive} == true ? 'text-success' : 'text-danger'">[[${p.isActive} ? 'Active' : 'Inactive']]</td>
+							<td>[[${p.stock}]]</td>
+							<td>
+								<a th:href="@{'/admin/editProduct/'+${p.id}}" class="btn btn-sm btn-primary">
+									<i class="fa-solid fa-pen-to-square"></i> Edit
+								</a>
+								<a th:href="@{'/admin/deleteProduct/'+${p.id}}" class="btn btn-sm btn-danger">
+									<i class="fa-solid fa-trash"></i> Delete
+								</a>
+							</td>
+						</tr>
+					</th:block>
+					</tbody>
+				</table>
+
+				<!-- Pagination -->
+				<div class="row">
+					<div class="col-md-4">Total Products: [[${totalElements}]]</div>
+					<div class="col-md-8">
+						<nav aria-label="Page navigation example">
+							<ul class="pagination justify-content-end">
+								<li class="page-item" th:classappend="${isFirst} ? 'disabled':''">
+									<a class="page-link" th:href="@{'/admin/products?pageNo='+${pageNo-1}}" aria-label="Previous">
+										<span aria-hidden="true">&laquo;</span>
+									</a>
+								</li>
+								<li th:each="i:${#numbers.sequence(1,totalPages)}" class="page-item" th:classappend="${pageNo+1==i}?'active':''">
+									<a class="page-link" th:href="@{'/admin/products?pageNo='+${i-1}}">[[${i}]]</a>
+								</li>
+								<li class="page-item" th:classappend="${isLast} ? 'disabled':''">
+									<a class="page-link" th:href="@{'/admin/products?pageNo='+${pageNo+1}}" aria-label="Next">
+										<span aria-hidden="true">&raquo;</span>
+									</a>
+								</li>
+							</ul>
+						</nav>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</section>
+</body>
+</html>

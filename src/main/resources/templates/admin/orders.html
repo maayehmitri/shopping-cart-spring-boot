@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" th:replace="~{base::layout(~{::section})}">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>All Orders</title>
+	<!-- Google Fonts -->
+	<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+	<!-- Bootstrap CSS -->
+	<link rel="stylesheet" th:href="@{/css/bootstrap.min.css}">
+	<style>
+		body {
+			background-color: #1a1a2e;
+			color: #ffffff;
+			font-family: 'Roboto', sans-serif;
+		}
+
+		.container-fluid {
+			margin-top: 50px;
+		}
+
+		.card-sh {
+			background-color: #16213e;
+			border: none;
+			border-radius: 8px;
+			box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+		}
+
+		.table {
+			background-color: #0f3460;
+			color: #ffffff;
+			border-radius: 8px;
+		}
+
+		.table thead {
+			background-color: #007bff;
+			color: #ffffff;
+		}
+
+		.table th, .table td {
+			vertical-align: middle;
+		}
+
+		.table tbody tr:hover {
+			background-color: #1a1a2e;
+		}
+
+		.btn-primary {
+			background-color: #007bff;
+			border: none;
+			transition: all 0.3s ease;
+		}
+
+		.btn-primary:hover {
+			background-color: #0056b3;
+			transform: scale(1.05);
+		}
+
+		.form-control {
+			background-color: #0f3460;
+			color: #ffffff;
+			border: 1px solid #007bff;
+			border-radius: 8px;
+			transition: border-color 0.3s ease;
+		}
+
+		.form-control:focus {
+			background-color: #16213e;
+			border-color: #00d4ff;
+			box-shadow: 0 0 8px rgba(0, 123, 255, 0.5);
+		}
+
+		a {
+			color: #00d4ff;
+			text-decoration: none;
+			transition: color 0.3s ease;
+		}
+
+		a:hover {
+			color: #007bff;
+		}
+
+		hr {
+			border-color: #007bff;
+		}
+	</style>
+</head>
+<body>
+<section>
+	<div class="container-fluid">
+		<div class="row">
+			<p class="text-center fs-3 mt-2">All Orders</p>
+			<hr>
+			<a href="/admin/" class="text-decoration-none"><i class="fa-solid fa-arrow-left"></i> Back</a>
+
+			<!-- Success and Error Messages -->
+			<div th:if="${session.succMsg}" class="alert alert-success text-center mt-3" role="alert">
+				[[${session.succMsg}]]
+				<th:block th:text="${@commnServiceImpl.removeSessionMessage()}"></th:block>
+			</div>
+			<div th:if="${session.errorMsg}" class="alert alert-danger text-center mt-3" role="alert">
+				[[${session.errorMsg}]]
+				<th:block th:text="${@commnServiceImpl.removeSessionMessage()}"></th:block>
+			</div>
+
+			<!-- Search Form -->
+			<div class="col-md-4 p-4">
+				<form action="/admin/search-order" method="get">
+					<div class="input-group">
+						<input type="text" class="form-control" name="orderId" placeholder="Enter order ID">
+						<button class="btn btn-primary">Search</button>
+					</div>
+				</form>
+			</div>
+
+			<!-- Orders Table -->
+			<div class="col-md-12 ps-4 pe-4">
+				<table class="table table-hover card-sh">
+					<thead>
+					<tr>
+						<th scope="col">Order ID</th>
+						<th scope="col">Name</th>
+						<th scope="col">Delivery Details</th>
+						<th scope="col">Date</th>
+						<th scope="col">Product Details</th>
+						<th scope="col">Price</th>
+						<th scope="col">Status</th>
+						<th scope="col">Action</th>
+					</tr>
+					</thead>
+					<tbody>
+					<th:block th:each="o:${orders}">
+						<tr>
+							<th scope="row" th:text="${o.orderId}"></th>
+							<td th:text="${o.user != null ? o.user.name : 'N/A'}"></td>
+							<td>
+								<span th:if="${o.orderAddress != null}">
+
+									Email: [[${o.orderAddress.email}]]<br>
+									Mobile: [[${o.orderAddress.mobileNo}]]<br>
+									Address: [[${o.orderAddress.address}]], [[${o.orderAddress.city}]], [[${o.orderAddress.state}]], [[${o.orderAddress.pincode}]]
+								</span>
+								<span th:if="${o.orderAddress == null}">Address Not Available</span>
+							</td>
+							<td th:text="${o.orderDate}"></td>
+							<td th:text="${o.product != null ? o.product.title : 'Product Info Missing'}"></td>
+							<td>
+								Quantity: [[${o.quantity != null ? o.quantity : 0}]]<br>
+								Price: &#8364; [[${o.price != null ? o.price : 0}]]<br>
+								Total: &#8364; [[${(o.quantity != null ? o.quantity : 0) * (o.price != null ? o.price : 0)}]]
+							</td>
+							<td th:text="${o.status}"></td>
+							<td>
+								<form action="/admin/update-order-status" method="post">
+									<input type="hidden" th:value="${o.id}" name="id">
+									<select class="form-control" name="st">
+										<option value="1" th:selected="${o.status == 'In Progress'}">In Progress</option>
+										<option value="2" th:selected="${o.status == 'Order Received'}">Order Received</option>
+										<option value="3" th:selected="${o.status == 'Product Packed'}">Product Packed</option>
+										<option value="4" th:selected="${o.status == 'Out for Delivery'}">Out for Delivery</option>
+										<option value="5" th:selected="${o.status == 'Delivered'}">Delivered</option>
+										<option value="6" th:selected="${o.status == 'Cancelled'}">Cancelled</option>
+									</select>
+									<button class="btn btn-primary btn-sm mt-2" th:disabled="${o.status == 'Cancelled' || o.status == 'Delivered'}">Update</button>
+								</form>
+							</td>
+						</tr>
+					</th:block>
+					</tbody>
+				</table>
+			</div>
+		</div>
+	</div>
+</section>
+</body>
+</html>

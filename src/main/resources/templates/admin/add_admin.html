@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" th:replace="~{base::layout(~{::section})}">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Add Admin</title>
+	<!-- Google Fonts -->
+	<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+	<!-- Bootstrap CSS -->
+	<link rel="stylesheet" th:href="@{/css/bootstrap.min.css}">
+	<style>
+		body {
+			background-color: #12487d;
+			font-family: 'Poppins', sans-serif;
+		}
+
+		.card {
+			border: none;
+			border-radius: 16px;
+			box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+		}
+
+		.card-header {
+			background: linear-gradient(135deg, #007bff, #0056b3);
+			color: white;
+			padding: 1.8rem;
+			text-align: center;
+			border-radius: 16px 16px 0 0;
+			box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+		}
+
+		.card-header h4 {
+			margin: 0;
+			font-weight: 700;
+			font-size: 1.8rem;
+		}
+
+		.form-label {
+			font-weight: 500;
+			color: #495057;
+		}
+
+		.form-control {
+			border-radius: 10px;
+			padding: 0.8rem;
+			box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.05);
+			border: 1px solid #ced4da;
+		}
+
+		.form-control:focus {
+			border-color: #007bff;
+			box-shadow: 0 0 4px rgba(0, 123, 255, 0.5);
+		}
+
+		.btn-primary {
+			background-color: #007bff;
+			border: none;
+			padding: 0.8rem 1.2rem;
+			font-size: 1rem;
+			font-weight: 600;
+			border-radius: 10px;
+			transition: all 0.3s ease;
+		}
+
+		.btn-primary:hover {
+			background-color: #0056b3;
+			transform: scale(1.03);
+			box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+		}
+
+		.alert {
+			font-size: 0.9rem;
+			border-radius: 8px;
+			padding: 0.8rem 1rem;
+		}
+
+		@media (max-width: 768px) {
+			.card {
+				margin-top: 20px;
+			}
+		}
+	</style>
+</head>
+<body>
+<section>
+	<div class="container mt-5">
+		<div class="row justify-content-center">
+			<div class="col-lg-8">
+				<div class="card">
+					<div class="card-header">
+						<h4>Add Admin</h4>
+					</div>
+					<div class="card-body px-5 py-4">
+						<!-- Success and Error Messages -->
+						<div th:if="${session.succMsg}" class="alert alert-success text-center" role="alert">
+							[[${session.succMsg}]]
+							<th:block th:text="${@commnServiceImpl.removeSessionMessage()}"></th:block>
+						</div>
+						<div th:if="${session.errorMsg}" class="alert alert-danger text-center" role="alert">
+							[[${session.errorMsg}]]
+							<th:block th:text="${@commnServiceImpl.removeSessionMessage()}"></th:block>
+						</div>
+
+						<!-- Form -->
+						<form action="/admin/save-admin" enctype="multipart/form-data" method="post">
+							<div class="row">
+								<div class="col-md-6">
+									<label class="form-label">Full Name</label>
+									<input required class="form-control" name="name" type="text" placeholder="Enter full name">
+								</div>
+								<div class="col-md-6">
+									<label class="form-label">Mobile Number</label>
+									<input required class="form-control" name="mobileNumber" type="number" placeholder="Enter mobile number">
+								</div>
+							</div>
+							<div class="mb-3">
+								<label class="form-label">Email</label>
+								<input required class="form-control" name="email" type="email" placeholder="Enter email address">
+							</div>
+							<div class="row">
+								<div class="col-md-6">
+									<label class="form-label">Address</label>
+									<input required class="form-control" name="address" type="text" placeholder="Enter address">
+								</div>
+								<div class="col-md-6">
+									<label class="form-label">City</label>
+									<input required class="form-control" name="city" type="text" placeholder="Enter city">
+								</div>
+							</div>
+							<div class="row">
+								<div class="col-md-6">
+									<label class="form-label">State</label>
+									<input required class="form-control" name="state" type="text" placeholder="Enter state">
+								</div>
+								<div class="col-md-6">
+									<label class="form-label">Pincode</label>
+									<input required class="form-control" name="pincode" type="number" placeholder="Enter pincode">
+								</div>
+							</div>
+							<div class="row">
+								<div class="col-md-6">
+									<label class="form-label">Password</label>
+									<input required class="form-control" name="password" type="password" placeholder="Enter password">
+								</div>
+								<div class="col-md-6">
+									<label class="form-label">Confirm Password</label>
+									<input required class="form-control" name="cpassword" type="password" placeholder="Confirm password">
+								</div>
+							</div>
+							<div class="mb-3">
+								<label class="form-label">Profile Image</label>
+								<input class="form-control" name="img" type="file">
+							</div>
+							<button type="submit" class="btn btn-primary w-100">Register</button>
+						</form>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</section>
+</body>
+</html>

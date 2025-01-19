@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" th:replace="~{base::layout(~{::section})}">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Category Management</title>
+	<!-- Include Google Fonts -->
+	<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+	<!-- Include Bootstrap CSS -->
+	<link rel="stylesheet" th:href="@{/css/bootstrap.min.css}">
+	<style>
+		body {
+			background-color: #12487d;
+			color: #ffffff;
+			font-family: 'Roboto', sans-serif;
+		}
+
+		.card {
+			background-color: #16213e;
+			border: none;
+			border-radius: 16px;
+			box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+		}
+
+		.card-header {
+			background: linear-gradient(135deg, #007bff, #00d4ff);
+			color: white;
+			border-radius: 16px 16px 0 0;
+			text-align: center;
+			padding: 1.5rem;
+			font-size: 1.5rem;
+			font-weight: 700;
+			box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+		}
+
+		.form-label {
+			font-weight: 500;
+			color: #00d4ff;
+		}
+
+		.form-control {
+			background-color: #0f3460;
+			color: white;
+			border: 1px solid #00d4ff;
+			border-radius: 8px;
+			padding: 0.8rem;
+			transition: border-color 0.3s ease;
+		}
+
+		.form-control:focus {
+			background-color: #16213e;
+			border-color: #007bff;
+			box-shadow: 0 0 8px rgba(0, 123, 255, 0.5);
+		}
+
+		.btn-primary, .btn-danger {
+			border: none;
+			padding: 0.8rem 1.2rem;
+			font-size: 0.9rem;
+			font-weight: 600;
+			border-radius: 8px;
+			transition: all 0.3s ease;
+		}
+
+		.btn-primary:hover {
+			background-color: #0056b3;
+			transform: scale(1.03);
+			box-shadow: 0 4px 15px rgba(0, 123, 255, 0.3);
+		}
+
+		.btn-danger:hover {
+			background-color: #ff4b4b;
+			transform: scale(1.03);
+			box-shadow: 0 4px 15px rgba(255, 75, 75, 0.3);
+		}
+
+		.table {
+			background-color: #0f3460;
+			color: #ffffff;
+			border-radius: 8px;
+			overflow: hidden;
+		}
+
+		.table th, .table td {
+			color: #ffffff;
+		}
+
+		.pagination .page-item .page-link {
+			background-color: #0f3460;
+			color: white;
+			border: none;
+			border-radius: 8px;
+		}
+
+		.pagination .page-item.active .page-link {
+			background-color: #007bff;
+			color: white;
+		}
+	</style>
+</head>
+<body>
+<section>
+	<div class="container-fluid p-5">
+		<div class="row">
+			<!-- Add Category Form -->
+			<div class="col-md-3">
+				<div class="card">
+					<div class="card-header">
+						Add Category
+					</div>
+					<div class="card-body">
+						<!-- Success and Error Messages -->
+						<div th:if="${session.succMsg}" class="alert alert-success text-center" role="alert">
+							[[${session.succMsg}]]
+							<th:block th:text="${@commnServiceImpl.removeSessionMessage()}"></th:block>
+						</div>
+						<div th:if="${session.errorMsg}" class="alert alert-danger text-center" role="alert">
+							[[${session.errorMsg}]]
+							<th:block th:text="${@commnServiceImpl.removeSessionMessage()}"></th:block>
+						</div>
+						<form action="/admin/saveCategory" method="post" enctype="multipart/form-data">
+							<div class="mb-3">
+								<label class="form-label">Enter Category</label>
+								<input type="text" name="name" class="form-control" placeholder="Enter category name">
+							</div>
+							<div class="mb-3">
+								<label class="form-label">Status</label>
+								<div class="form-check">
+									<input class="form-check-input" type="radio" value="true" name="isActive" id="statusActive" checked>
+									<label class="form-check-label" for="statusActive">Active</label>
+								</div>
+								<div class="form-check">
+									<input class="form-check-input" type="radio" value="false" name="isActive" id="statusInactive">
+									<label class="form-check-label" for="statusInactive">Inactive</label>
+								</div>
+							</div>
+							<div class="mb-3">
+								<label class="form-label">Upload Image</label>
+								<input type="file" name="file" class="form-control">
+							</div>
+							<button type="submit" class="btn btn-primary w-100">Save</button>
+						</form>
+					</div>
+				</div>
+			</div>
+
+			<!-- Category Details -->
+			<div class="col-md-8">
+				<div class="card">
+					<div class="card-header">
+						Category Details
+					</div>
+					<div class="card-body">
+						<table class="table table-hover">
+							<thead>
+							<tr>
+								<th scope="col">Sl No</th>
+								<th scope="col">Category</th>
+								<th scope="col">Status</th>
+								<th scope="col">Image</th>
+								<th scope="col">Action</th>
+							</tr>
+							</thead>
+							<tbody>
+							<tr th:each="cat, c:${categorys}">
+								<th scope="row">[[${c.count}]]</th>
+								<td>[[${cat.name}]]</td>
+								<td th:text="${cat.isActive ? 'Active' : 'Inactive'}"></td>
+								<td><img th:src="@{'/img/category_img/'+${cat.imageName}}" width="50px" height="50px"></td>
+								<td>
+									<a th:href="@{'/admin/loadEditCategory/'+${cat.id}}" class="btn btn-primary btn-sm">Edit</a>
+									<a th:href="@{'/admin/deleteCategory/'+${cat.id}}" class="btn btn-danger btn-sm">Delete</a>
+								</td>
+							</tr>
+							</tbody>
+						</table>
+						<!-- Pagination -->
+						<nav aria-label="Page navigation">
+							<ul class="pagination">
+								<li class="page-item" th:classappend="${isFirst} ? 'disabled':''">
+									<a class="page-link" th:href="@{'/admin/category?pageNo='+${pageNo-1}}" aria-label="Previous">&laquo;</a>
+								</li>
+								<li th:each="i:${#numbers.sequence(1, totalPages)}" class="page-item" th:classappend="${pageNo+1==i}?'active':''">
+									<a class="page-link" th:href="@{'/admin/category?pageNo='+${i-1}}">[[${i}]]</a>
+								</li>
+								<li class="page-item" th:classappend="${isLast} ? 'disabled':''">
+									<a class="page-link" th:href="@{'/admin/category?pageNo='+${pageNo+1}}" aria-label="Next">&raquo;</a>
+								</li>
+							</ul>
+						</nav>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</section>
+</body>
+</html>

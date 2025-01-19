@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" th:replace="~{base::layout(~{::section})}">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Home</title>
+	<!-- Google Fonts -->
+	<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+	<!-- Bootstrap CSS -->
+	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" crossorigin="anonymous">
+	<style>
+		body {
+			font-family: 'Roboto', sans-serif;
+			background-color: #1a1a2e;
+			color: #ffffff;
+			margin: 0;
+			padding: 0;
+		}
+
+		/* Image Styling */
+		.static-image img {
+			border-radius: 12px;
+			box-shadow: 0 8px 20px rgba(0, 0, 0, 0.5);
+			width: 100%;
+			height: 350px;
+			object-fit: cover;
+		}
+
+		/* Section Titles */
+		.section-title {
+			font-size: 1.8rem;
+			font-weight: 700;
+			margin-bottom: 1.5rem;
+			color: #00d4ff;
+			text-align: center;
+		}
+
+		/* Category Cards */
+		.category-card {
+			background: #16213e;
+			border: none;
+			border-radius: 50%;
+			box-shadow: 0 8px 20px rgba(0, 0, 0, 0.5);
+			padding: 1.5rem;
+			transition: transform 0.3s ease;
+		}
+
+		.category-card img {
+			border-radius: 50%;
+		}
+
+		.category-card:hover {
+			transform: scale(1.05);
+			box-shadow: 0 8px 25px rgba(0, 0, 0, 0.7);
+		}
+
+		.category-card a {
+			display: block;
+			color: #ffffff;
+			font-weight: 600;
+			margin-top: 0.5rem;
+			text-decoration: none;
+		}
+
+		.category-card a:hover {
+			color: #00d4ff;
+		}
+
+		/* Product Cards */
+		.product-card {
+			background: #16213e;
+			border: none;
+			border-radius: 12px;
+			box-shadow: 0 8px 20px rgba(0, 0, 0, 0.5);
+			padding: 1.5rem;
+			transition: transform 0.3s ease;
+		}
+
+		.product-card img {
+			border-radius: 8px;
+		}
+
+		.product-card:hover {
+			transform: scale(1.05);
+			box-shadow: 0 8px 25px rgba(0, 0, 0, 0.7);
+		}
+
+		.product-card a {
+			display: block;
+			color: #ffffff;
+			font-weight: 600;
+			margin-top: 0.5rem;
+			text-decoration: none;
+		}
+
+		.product-card a:hover {
+			color: #00d4ff;
+		}
+	</style>
+</head>
+<body>
+<section>
+	<!-- Static Image Section -->
+	<div class="container mt-5 static-image">
+		<img src="img/online-shopping.png" alt="E-Commerce Concept">
+	</div>
+
+	<!-- Start Category Module -->
+	<div class="container mt-5">
+		<p class="section-title">Categories</p>
+		<div class="row justify-content-center">
+			<div class="col-md-2 text-center" th:each="c:${category}">
+				<div class="category-card">
+					<img th:src="@{'img/category_img/'+${c.imageName}}" alt="Category Image" width="100%" height="140px">
+					<a th:href="@{'/products?category='+${c.name}}">[[${c.name}]]</a>
+				</div>
+			</div>
+		</div>
+	</div>
+	<!-- End Category Module -->
+
+	<!-- Start Latest Product Module -->
+	<div class="container mt-5">
+		<p class="section-title">Latest Products</p>
+		<div class="row justify-content-center">
+			<div class="col-md-3 text-center" th:each="p:${products}">
+				<div class="product-card">
+					<img th:src="@{'img/product_img/'+${p.image}}" alt="Product Image" width="100%" height="140px">
+					<a th:href="@{'/product/'+${p.id}}">[[${p.title}]]</a>
+				</div>
+			</div>
+		</div>
+	</div>
+	<!-- End Latest Product Module -->
+</section>
+
+<!-- Bootstrap JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
+</body>
+</html>

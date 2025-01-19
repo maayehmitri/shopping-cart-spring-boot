@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" th:replace="~{base::layout(~{::section})}">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Admins List</title>
+	<!-- Include Google Fonts -->
+	<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+	<!-- Include Bootstrap CSS -->
+	<link rel="stylesheet" th:href="@{/css/bootstrap.min.css}">
+	<style>
+		body {
+			background-color: #1a1a2e;
+			color: #ffffff;
+			font-family: 'Roboto', sans-serif;
+		}
+
+		.card {
+			background-color: #16213e;
+			border: none;
+			border-radius: 16px;
+			box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+		}
+
+		.card-header {
+			background: linear-gradient(135deg, #007bff, #00d4ff);
+			color: white;
+			font-size: 1.5rem;
+			text-align: center;
+			padding: 1.5rem;
+			border-radius: 16px 16px 0 0;
+		}
+
+		.table {
+			background-color: #0f3460;
+			color: white;
+			border-radius: 8px;
+			overflow: hidden;
+		}
+
+		.table thead {
+			background-color: #007bff;
+			color: white;
+		}
+
+		.table tbody tr:hover {
+			background-color: #16213e;
+		}
+
+		.table td img {
+			border-radius: 50%;
+			border: 2px solid #00d4ff;
+		}
+
+		.btn {
+			font-size: 0.9rem;
+			font-weight: 600;
+			border-radius: 8px;
+			transition: all 0.3s ease;
+		}
+
+		.btn-primary {
+			background: linear-gradient(135deg, #007bff, #00d4ff);
+			border: none;
+		}
+
+		.btn-danger {
+			background: linear-gradient(135deg, #ff4b4b, #ff6161);
+			border: none;
+		}
+
+		.btn-warning {
+			background: linear-gradient(135deg, #ffa726, #ffcc80);
+			color: #000;
+			border: none;
+		}
+
+		.btn:hover {
+			transform: scale(1.05);
+		}
+
+		.alert {
+			border-radius: 8px;
+		}
+
+		.container-fluid {
+			margin-top: 50px;
+			padding: 30px;
+		}
+	</style>
+</head>
+<body>
+<section>
+	<div class="container-fluid">
+		<div class="card">
+			<div class="card-header">
+				<p th:if="${userType==1}">Users</p>
+				<p th:if="${userType==2}">Admins</p>
+			</div>
+			<div class="card-body">
+				<!-- Success and Error Messages -->
+				<div th:if="${session.succMsg}" class="alert alert-success text-center" role="alert">
+					[[${session.succMsg}]]
+					<th:block th:text="${@commnServiceImpl.removeSessionMessage()}"></th:block>
+				</div>
+				<div th:if="${session.errorMsg}" class="alert alert-danger text-center" role="alert">
+					[[${session.errorMsg}]]
+					<th:block th:text="${@commnServiceImpl.removeSessionMessage()}"></th:block>
+				</div>
+
+				<!-- Users/Admins Table -->
+				<table class="table table-hover">
+					<thead>
+					<tr>
+						<th scope="col">Sl No</th>
+						<th scope="col">Profile</th>
+						<th scope="col">Name</th>
+						<th scope="col">Email</th>
+						<th scope="col">Mobile No</th>
+						<th scope="col">Address</th>
+						<th scope="col">Status</th>
+						<th scope="col">Actions</th>
+					</tr>
+					</thead>
+					<tbody>
+					<th:block th:each="u,c:${users}">
+						<tr>
+							<th scope="row">[[${c.count}]]</th>
+							<td>
+								<img th:src="@{'/img/profile_img/'+${u.profileImage}}" alt="Profile Image" width="60" height="60">
+							</td>
+							<td>[[${u.name}]]</td>
+							<td>[[${u.email}]]</td>
+							<td>[[${u.mobileNumber}]]</td>
+							<td>[[${u.address+','+u.city+','+u.state+','+u.pincode}]]</td>
+							<td th:class="${u.isEnable} ? 'text-success' : 'text-danger'">
+								[[${u.isEnable} ? 'Active' : 'Inactive']]
+							</td>
+							<td>
+								<a th:href="@{'/admin/updateSts?status=true&id='+${u.id}}+'&type='+${userType}"
+								   class="btn btn-sm btn-primary">Activate</a>
+								<a th:href="@{'/admin/updateSts?status=false&id='+${u.id}}+'&type='+${userType}"
+								   class="btn btn-sm btn-danger">Deactivate</a>
+								<form th:action="@{'/admin/delete/' + ${u.id}}" method="post" style="display:inline;">
+									<input type="hidden" name="_method" value="delete">
+									<button type="submit" class="btn btn-sm btn-warning">Delete</button>
+								</form>
+							</td>
+						</tr>
+					</th:block>
+					</tbody>
+				</table>
+			</div>
+		</div>
+	</div>
+</section>
+</body>
+</html>
