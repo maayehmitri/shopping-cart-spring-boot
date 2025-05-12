@@ -40,7 +40,7 @@ public class ProductOrder {
 	@OneToOne(cascade = CascadeType.ALL)
 	private OrderAddress orderAddress; // Delivery address for the order
 
-	// Helper method to get the user's full name
+
 	public String getUserName() {
 		return user != null ? user.getName() : null;
 	}
